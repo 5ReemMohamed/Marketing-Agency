@@ -1,6 +1,5 @@
 body {
     color: #fff;
-    overflow: hidden;
     font-family: "Cairo", sans-serif;
 }
 
@@ -68,6 +67,8 @@ body {
     padding-bottom: 60px;
     background: url("https://demo.awaikenthemes.com/artistics/it-company/wp-content/uploads/2025/01/video-image.jpg") no-repeat center/cover;
     position: relative;
+        overflow: hidden;
+
 }
 
 
