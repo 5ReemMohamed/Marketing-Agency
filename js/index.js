@@ -6,11 +6,10 @@ function buildCircularText() {
     const text = container.getAttribute(`data-${currentLang}`) || "";
 
     container.innerHTML = "";
-
     if (text.length === 0) return;
 
     const letters = Array.from(text);
-    const step = 360 / letters.length;
+    const step = 360 / Math.max(letters.length, 1);
 
     letters.forEach((char, index) => {
         const span = document.createElement("span");
@@ -21,13 +20,7 @@ function buildCircularText() {
 }
 
 if (typeof AOS !== 'undefined') {
-    AOS.init({
-        duration: 1000,
-        easing: 'ease-out-cubic',
-        once: false,
-        offset: 100,
-        delay: 200
-    });
+    AOS.init({ duration: 1000, once: false });
 }
 
 const navbar = document.querySelector('.navbar');
@@ -45,8 +38,8 @@ if (navLinks) {
         link.addEventListener('click', () => {
             if (!navMenu) return;
             if (navMenu.classList.contains('show')) {
-                const bsCollapse = bootstrap.Collapse.getInstance(navMenu) || new bootstrap.Collapse(navMenu);
-                bsCollapse.hide();
+                const bsCollapse = (typeof bootstrap !== 'undefined') ? bootstrap.Collapse.getInstance(navMenu) || new bootstrap.Collapse(navMenu) : null;
+                if (bsCollapse) bsCollapse.hide();
             }
         });
     });
@@ -60,7 +53,7 @@ window.addEventListener('resize', () => {
     }
 });
 
-if (navMenu) {
+if (navMenu && navbar) {
     navMenu.addEventListener('show.bs.collapse', () => navbar.classList.add('menu-open'));
     navMenu.addEventListener('hide.bs.collapse', () => navbar.classList.remove('menu-open'));
 }
@@ -68,19 +61,17 @@ if (navMenu) {
 let currentLang = "en";
 let swiperInstance = null;
 
-
 function updateTranslations(lang) {
     document.querySelectorAll("[data-en], [data-ar], [data-en-placeholder], [data-ar-placeholder]").forEach(el => {
-
         const tag = el.tagName.toLowerCase();
         const isInput = (tag === "input" || tag === "textarea");
+
         if (el.hasAttribute("data-en-placeholder") && el.hasAttribute("data-ar-placeholder")) {
-            const placeholder = (lang === "ar")
+            el.placeholder = (lang === "ar")
                 ? el.getAttribute("data-ar-placeholder")
                 : el.getAttribute("data-en-placeholder");
-
-            el.placeholder = placeholder;
         }
+
         if (el.hasAttribute("data-en") && el.hasAttribute("data-ar")) {
             if (!isInput) {
                 el.textContent = (lang === "ar")
@@ -100,7 +91,7 @@ function initSwiper() {
     if (typeof Swiper === 'undefined') return;
 
     if (swiperInstance) {
-        try { swiperInstance.destroy(true, true); } catch (e) { }
+        try { swiperInstance.destroy(true, true); } catch (e) { console.warn(e); }
         swiperInstance = null;
     }
 
@@ -109,27 +100,19 @@ function initSwiper() {
     swiperInstance = new Swiper(".mySwiper", {
         direction: "horizontal",
         loop: slidesCount > 1,
-
-        autoplay: {
-            delay: 2500,
-            disableOnInteraction: false
-        },
-
+        autoplay: { delay: 2500, disableOnInteraction: false },
         watchOverflow: true,
         observer: true,
         observeParents: true,
         speed: 600,
-
         navigation: {
             nextEl: ".mySwiper .swiper-button-next",
             prevEl: ".mySwiper .swiper-button-prev",
         },
-
         pagination: {
             el: ".mySwiper .swiper-pagination",
             clickable: true,
         },
-
         breakpoints: {
             0: { slidesPerView: 1, spaceBetween: 10 },
             768: { slidesPerView: 2, spaceBetween: 15 },
@@ -138,6 +121,36 @@ function initSwiper() {
         }
     });
 }
+
+document.addEventListener("click", function (e) {
+
+    const slide = e.target.closest(".swiper-slide.video-slid");
+    if (!slide) return;
+
+    const videoSrc = slide.getAttribute("data-video");
+    if (!videoSrc) {
+        console.error("No data-video found!");
+        return;
+    }
+
+    const video = document.getElementById("modalVideo");
+    const source = video.querySelector("source");
+
+    source.src = videoSrc;
+    video.load();
+
+    const modal = new bootstrap.Modal(document.getElementById("videoModal"));
+    modal.show();
+});
+
+document.getElementById("videoModal").addEventListener("hidden.bs.modal", function () {
+    const video = document.getElementById("modalVideo");
+    const source = video.querySelector("source");
+
+    video.pause();
+    video.currentTime = 0;
+    source.src = ""; 
+});
 
 
 (function setupContactForm() {
@@ -158,7 +171,7 @@ function initSwiper() {
         phone: {
             el: document.getElementById('phone'),
             err: document.getElementById('err-phone'),
-            regex: /^[+\d\(\)\s\-]{7,20}$/
+            regex: /^[+\d()\s\-]{7,20}$/
         },
         email: {
             el: document.getElementById('email'),
@@ -168,18 +181,18 @@ function initSwiper() {
         message: {
             el: document.getElementById('message'),
             err: document.getElementById('err-message'),
-            regex: /[\s\S]{10,2000}/ 
+            regex: /[\s\S]{10,2000}/
         }
     };
 
     const errors = {
         empty: {
-            en: (label) => `${label} couldn't be empty.`,
-            ar: (label) => `لا يمكن أن يكون ${label} فارغاً.`
+            en: label => `${label} couldn't be empty.`,
+            ar: label => `لا يمكن أن يكون ${label} فارغاً.`
         },
         invalid: {
-            en: (label) => `${label} is invalid.`,
-            ar: (label) => `${label} غير صالح.`
+            en: label => `${label} is invalid.`,
+            ar: label => `${label} غير صالح.`
         },
         shortMessage: {
             en: () => `Message is too short (min 10 characters).`,
@@ -219,10 +232,7 @@ function initSwiper() {
         if (!f.el) return;
         f.el.addEventListener('input', () => {
             const value = f.el.value.trim();
-
-            if (value === '') {
-                return;
-            }
+            if (value === '') return;
 
             if (key === 'phone') {
                 if (f.regex.test(value) && (value.replace(/\D/g, '').length >= 7)) {
@@ -333,7 +343,6 @@ function initSwiper() {
             Object.keys(fields).forEach(k => clearError(k));
         }
     });
-
 })();
 
 const langBtn = document.getElementById("lang-btn");
@@ -352,12 +361,13 @@ if (langBtn) {
             html.setAttribute("dir", "ltr");
             document.body.classList.remove("rtl");
         }
+
         buildCircularText();
         setTimeout(initSwiper, 100);
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
     currentLang = localStorage.getItem("preferredLang") || "en";
     if (currentLang === "ar") {
         document.documentElement.setAttribute("dir", "rtl");
@@ -372,4 +382,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initSwiper();
 
     buildCircularText();
+
+    if (typeof AOS !== 'undefined' && typeof AOS.refresh === 'function') AOS.refresh();
 });
