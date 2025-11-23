@@ -1020,6 +1020,9 @@ textarea.form-control {
     color: #ebebeb;
     font-weight: 500;
 }
+html[dir="rtl"] #phone::placeholder{
+text-align: right;
+}
 
 textarea.form-control {
     min-height: 140px;
@@ -1415,6 +1418,16 @@ html[dir="rtl"] .text-end {
         right: 0;
 
     }
+           .social-floating .icon-1 {
+    top: 0px;
+    left: 20px;
+}
+
+.social-floating .icon-2 {
+    top: 80px;
+    right: 10px;
+}
+
 }
 
 @media (max-width: 768px) {
@@ -1451,7 +1464,7 @@ html[dir="rtl"] .text-end {
     .main-circle {
 
         top: 24%;
-        left: 30%;
+        left: 20%;
 
     }
 
@@ -1460,6 +1473,8 @@ html[dir="rtl"] .text-end {
         right: 0;
 
     }
+ 
+
 }
 
 @media (max-width: 576px) {
@@ -1496,8 +1511,8 @@ html[dir="rtl"] .text-end {
     .main-circle {
         width: 250px;
         height: 250px;
-        top: 18%;
-        left: 24%;
+        top: 17%;
+        left: 15%;
 
     }
 
@@ -1506,6 +1521,9 @@ html[dir="rtl"] .text-end {
         right: 0;
 
     }
+
+
+
 }
 
 @media (max-width: 499px) {
@@ -1561,7 +1579,7 @@ html[dir="rtl"] .text-end {
         width: 190px;
         height: 190px;
         top: 18%;
-        left: 24%;
+        left: 14%;
 
     }
 
