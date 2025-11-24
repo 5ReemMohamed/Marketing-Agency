@@ -1780,18 +1780,11 @@ html[dir="rtl"] .text-end {
     font-weight: 800;
     letter-spacing: 8px;
 
-    background: linear-gradient(
-        135deg,
-        #FFE3B8 0%,    
-        #FFCC80 30%,   
-        #EBA86C 60%,   
-        #D4793A 100%   
-    );
-
-    background-size: 200% 200%;
+  background: linear-gradient(179deg, #6b204b, #de8e47);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: transparent;
     animation: gradient-shift 3s ease infinite;
 }
 
