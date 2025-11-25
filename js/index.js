@@ -143,14 +143,18 @@ document.addEventListener("click", function (e) {
     modal.show();
 });
 
-document.getElementById("videoModal").addEventListener("hidden.bs.modal", function () {
-    const video = document.getElementById("modalVideo");
-    const source = video.querySelector("source");
+const videoModal = document.getElementById("videoModal");
 
-    video.pause();
-    video.currentTime = 0;
-    source.src = ""; 
-});
+if (videoModal) {
+    videoModal.addEventListener("hidden.bs.modal", function () {
+        const video = document.getElementById("modalVideo");
+        const source = video.querySelector("source");
+
+        video.pause();
+        video.currentTime = 0;
+        source.src = "";
+    });
+}
 
 
 (function setupContactForm() {
